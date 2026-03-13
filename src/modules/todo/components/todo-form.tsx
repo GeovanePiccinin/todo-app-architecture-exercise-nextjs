@@ -26,9 +26,9 @@ export function TodoForm({ filter }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="w-full flex gap-2">
       <input
-        className="border rounded-md p-2"
+        className="border w-full rounded-md p-2"
         name="title"
         placeholder="add a new todo"
       />

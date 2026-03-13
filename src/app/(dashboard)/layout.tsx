@@ -20,7 +20,7 @@ export default async function DashboardLayout({
         <LogoutButton />
       </nav>
 
-      <main className="p-6">{children}</main>
+      <main className="p-6 flex justify-center">{children}</main>
     </div>
   );
 }

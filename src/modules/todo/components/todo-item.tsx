@@ -17,14 +17,25 @@ export function TodoItem({ id, title, completed, onToggle, onDelete }: Props) {
   }
 
   return (
-    <li className="flex items-center gap-3">
-      <input type="checkbox" checked={completed} onChange={handleToggle} />
+    <li className="flex items-center mb-2">
+      <div className="w-full">
+        <input
+          type="checkbox"
+          className="mr-1.5"
+          checked={completed}
+          onChange={handleToggle}
+        />
 
-      <span className={completed ? "line-through text-gray-400" : ""}>
-        {title}
-      </span>
-
-      <button onClick={handleDelete}>delete</button>
+        <span className={completed ? "line-through text-gray-400" : ""}>
+          {title}
+        </span>
+      </div>
+      <button
+        className="text-white w-5 h-5 rounded-md bg-yellow-500"
+        onClick={handleDelete}
+      >
+        X
+      </button>
     </li>
   );
 }

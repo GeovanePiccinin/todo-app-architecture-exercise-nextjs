@@ -22,7 +22,7 @@ export function TodoList({ filter }: Props) {
     query.data?.pages.flatMap((page) => page.todos) ?? [];
 
   return (
-    <div>
+    <div className="w-full mt-4">
       <ul className="space-y-2">
         {todos.map((todo) => (
           <TodoItem

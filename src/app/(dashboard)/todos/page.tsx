@@ -30,15 +30,14 @@ export default async function TodosPage({ searchParams }: Props) {
   await queryClient.prefetchInfiniteQuery({
     queryKey: todoKeys.list(filter),
 
-    queryFn: ({ pageParam }) =>
-      fetchTodos(filter, pageParam as string | null),
+    queryFn: ({ pageParam }) => fetchTodos(filter, pageParam as string | null),
 
     initialPageParam: null,
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div>
+      <div className="w-1/2">
         <h1 className="text-xl mb-4">Todos</h1>
 
         <TodoFilters />
