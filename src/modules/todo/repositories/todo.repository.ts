@@ -1,12 +1,13 @@
 import { prisma } from "@/infrastructure/prisma/prisma";
+import { DbClient, DbTransaction } from "@/infrastructure/prisma/db.types";
 import { TodoFilter } from "../types/todo.types";
 import { Prisma } from "@/generated/prisma/client";
 
 const PAGE_SIZE = 10;
 
-type PrismaExecutor = Prisma.TransactionClient;
+type DbExecutor = DbClient | DbTransaction;
 
-function getDb(db?: PrismaExecutor) {
+function getDb(db?: DbExecutor): DbExecutor {
   return db ?? prisma;
 }
 
@@ -14,7 +15,7 @@ export async function findTodosByUserId(
   userId: string,
   filter: TodoFilter,
   cursor?: string,
-  db?: PrismaExecutor,
+  db?: DbExecutor,
 ) {
   const client = getDb(db);
 
@@ -23,26 +24,18 @@ export async function findTodosByUserId(
     deletedAt: null,
   };
 
-  if (filter === "active") {
-    where.completed = false;
-  }
+  if (filter === "active") where.completed = false;
+  if (filter === "completed") where.completed = true;
 
-  if (filter === "completed") {
-    where.completed = true;
-  }
-
-  const queryArgs: Prisma.TodoFindManyArgs = {
+  const todos = await client.todo.findMany({
     where,
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     take: PAGE_SIZE + 1,
-  };
-
-  if (cursor) {
-    queryArgs.cursor = { id: cursor };
-    queryArgs.skip = 1;
-  }
-
-  const todos = await (client.todo as Prisma.TodoDelegate).findMany(queryArgs);
+    ...(cursor && {
+      skip: 1,
+      cursor: { id: cursor },
+    }),
+  });
 
   let nextCursor: string | null = null;
 
@@ -60,7 +53,7 @@ export async function findTodosByUserId(
 export async function createTodo(
   userId: string,
   title: string,
-  db?: PrismaExecutor,
+  db?: DbExecutor,
 ) {
   const client = getDb(db);
 
@@ -75,7 +68,7 @@ export async function createTodo(
 export async function toggleTodo(
   id: string,
   completed: boolean,
-  db?: PrismaExecutor,
+  db?: DbExecutor,
 ) {
   const client = getDb(db);
 
@@ -85,7 +78,7 @@ export async function toggleTodo(
   });
 }
 
-export async function deleteTodo(id: string, db?: PrismaExecutor) {
+export async function deleteTodo(id: string, db?: DbExecutor) {
   const client = getDb(db);
 
   return client.todo.update({

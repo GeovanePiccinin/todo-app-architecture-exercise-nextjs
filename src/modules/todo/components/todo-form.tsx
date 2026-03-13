@@ -30,7 +30,7 @@ export function TodoForm({ filter }: Props) {
       <input
         className="border rounded-md p-2"
         name="title"
-        placeholder="New todo"
+        placeholder="add a new todo"
       />
 
       <button className="text-white p-2 rounded-md bg-green-600" type="submit">

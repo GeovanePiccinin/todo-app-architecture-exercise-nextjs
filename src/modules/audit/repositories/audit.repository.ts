@@ -1,14 +1,14 @@
 import { prisma } from "@/infrastructure/prisma/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import { DbClient, DbTransaction } from "@/infrastructure/prisma/db.types";
 import { AuditLogInput } from "../types/audit.types";
 
-type PrismaExecutor = Prisma.TransactionClient;
+type DbExecutor = DbClient | DbTransaction;
 
-function getDb(db?: PrismaExecutor) {
+function getDb(db?: DbExecutor): DbExecutor {
   return db ?? prisma;
 }
 
-export async function createAuditLog(data: AuditLogInput, db?: PrismaExecutor) {
+export async function createAuditLog(data: AuditLogInput, db?: DbExecutor) {
   const client = getDb(db);
 
   await client.auditLog.create({

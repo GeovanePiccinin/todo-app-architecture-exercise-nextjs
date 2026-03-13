@@ -3,7 +3,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 
 function createPrismaClient() {
   return new PrismaClient({
-    log: ["query", "error"],
+    //log: ["query", "error"],
     accelerateUrl: process.env.DATABASE_URL || "",
   }).$extends(withAccelerate());
 }
