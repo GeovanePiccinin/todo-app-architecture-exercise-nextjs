@@ -1,5 +1,4 @@
 import { requireAuth } from "@/modules/auth/guards/auth.guard";
-import { loadMoreTodosAction } from "@/modules/todo/actions/load-more-todos.action";
 
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
@@ -10,20 +9,19 @@ import { TodoFilters } from "@/modules/todo/components/todo-filters";
 import { TodoForm } from "@/modules/todo/components/todo-form";
 
 import { todoKeys } from "@/modules/todo/queries/todo.keys";
+import { fetchTodos } from "@/modules/todo/queries/fetch-todos";
 import { TodoFilter } from "@/modules/todo/types/todo.types";
 
 type Props = {
-  searchParams: Promise<{
+  searchParams: {
     filter?: TodoFilter;
-  }>;
+  };
 };
 
 export default async function TodosPage({ searchParams }: Props) {
-  const params = await searchParams;
+  const filter: TodoFilter = searchParams.filter ?? "all";
 
-  const filter: TodoFilter = params.filter ?? "all";
-
-  const session = await requireAuth();
+  await requireAuth();
 
   const queryClient = makeQueryClient();
 
@@ -31,7 +29,7 @@ export default async function TodosPage({ searchParams }: Props) {
     queryKey: todoKeys.list(filter),
 
     queryFn: ({ pageParam }) =>
-      loadMoreTodosAction(filter, pageParam as string | null),
+      fetchTodos(filter, pageParam as string | null),
 
     initialPageParam: null,
   });

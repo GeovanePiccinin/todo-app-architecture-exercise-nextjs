@@ -1,40 +1,16 @@
 "use server";
 import { redirect } from "next/navigation";
-import { prisma } from "@/infrastructure/prisma/prisma";
-import bcrypt from "bcrypt";
-import { AppError } from "@/shared/errors/app-error";
+import { withRequestContext } from "@/infrastructure/observability/with-request-context";
+import { registerUserService } from "../services/auth.service";
 
 export async function registerUser(
   name: string,
   email: string,
   password: string,
 ) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  await withRequestContext(() =>
+    registerUserService(name, email, password),
+  );
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      profile: {
-        create: {
-          name,
-        },
-      },
-    },
-  });
-
-  if (user) {
-    // Redirect to the login page on success
-    redirect("/login");
-  } else {
-    // Handle error or return an error state
-    if (!user) {
-      throw new AppError({
-        message: "Registration failed",
-        code: "400",
-        statusCode: 400,
-      });
-    }
-  }
+  redirect("/login");
 }
