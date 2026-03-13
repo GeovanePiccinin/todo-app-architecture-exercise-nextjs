@@ -13,13 +13,15 @@ import { fetchTodos } from "@/modules/todo/queries/fetch-todos";
 import { TodoFilter } from "@/modules/todo/types/todo.types";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     filter?: TodoFilter;
-  };
+  }>;
 };
 
 export default async function TodosPage({ searchParams }: Props) {
-  const filter: TodoFilter = searchParams.filter ?? "all";
+  const params = await searchParams;
+
+  const filter: TodoFilter = params.filter ?? "all";
 
   await requireAuth();
 
